@@ -111,11 +111,4 @@ if __name__ == "__main__":
             f'------------------------------------------------------------\n'
             f'                    STARTING {scenario}                     \n'
             f'------------------------------------------------------------\n')
-        # Run invest, but if something goes wrong, move on to the next scenario
-        # instead of stopping completely.
-        try:
-            coastal_vulnerability.execute(cv_args)
-        except Exception as e:
-            LOGGER.error(f'Something went wrong during {scenario}')
-            LOGGER.error(e)
-
+        coastal_vulnerability.execute(cv_args)
