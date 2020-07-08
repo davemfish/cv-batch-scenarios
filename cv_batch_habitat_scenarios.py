@@ -30,7 +30,6 @@ def generate_base_args(base_data_dir):
         'geomorphology_fill_value': '4',
         'geomorphology_vector_path': os.path.join(base_data_dir, 'geomorph_MAR_v4_shift_BZ_MX.shp'),
         'landmass_vector_path': os.path.join(base_data_dir, 'landmass_adjusted_clipped_shift_BZ_MX_NAD83.shp'),
-        'max_fetch_distance': '30000',
         'model_resolution': '10000',
         'population_radius': '500',
         'population_raster_path': os.path.join(base_data_dir, 'WorldPop_2019_MAR.tif'),
@@ -38,20 +37,6 @@ def generate_base_args(base_data_dir):
         'wwiii_vector_path': os.path.join(base_data_dir, 'WaveWatchIII_global_unprocessed_NAD83.shp'),
     }
     return args
-
-
-def run_invest(aoi_path, habitat_table_path, suffix, output_dir):
-    """Execute CV with a given AOI."""
-    args['aoi_vector_path'] = aoi_path
-    args['habitat_table_path'] = habitat_table_path
-    args['results_suffix'] = suffix
-    args['workspace_dir'] = output_dir
-
-    try:
-        coastal_vulnerability.execute(args)
-    except Exception as e:
-        LOGGER.error(f'Something went wrong during {scenario}')
-        LOGGER.error(e)
 
 
 if __name__ == "__main__":
@@ -68,6 +53,9 @@ if __name__ == "__main__":
         help='path to an output directory that will be created if '
              'it does not exist. This directory will get a subfolder '
              'for each scenario.')
+    parser.add_argument(
+        '--fetch_distance', type=str, required=True,
+        help='number used for max_fetch_distance parameter')
 
     args = parser.parse_args()
     # Make the output directory. If it already exists, do nothing
@@ -97,6 +85,7 @@ if __name__ == "__main__":
     # Get all the CV args that are the same across scenarios
     cv_args = generate_base_args(args.base_data_dir)
     cv_args['aoi_vector_path'] = aoi_path
+    cv_args['max_fetch_distance'] = args.fetch_distance
 
     for scenario in scenarios:
         # Insert all the CV args that are unique to each scenario
